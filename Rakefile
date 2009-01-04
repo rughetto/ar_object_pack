@@ -25,7 +25,7 @@ spec = Gem::Specification.new do |s|
   s.email = EMAIL
   s.homepage = HOMEPAGE
   
-  s.add_dependency('activerecord')
+  s.add_dependency('active_record')
   s.add_dependency('json')
   
   s.require_path = 'lib'

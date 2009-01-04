@@ -9,57 +9,59 @@ module ArObjectPack
     #     package field_name, :marshall 
     #   end
     # arguments: meth 
-    module ActsMethods
+    module ActiveRecordMethods
       def package( meth, pack_type=:marshal )
         include ArObjectPack::ObjectPackager::InstanceMethods
         
         pack_type = :marshal unless pack_formats.include?( pack_type )
-        pack_class = 
         
         self.class_eval %{
-          # create new readers 
-          alias _#{meth} #{meth}
+          # create new reader 
           def #{meth}
-            unpack(_#{meth}, #{pack_type})
+            unpack(self[:#{meth}], '#{pack_type}')
           end
           
-          # create new writers
-          alias _#{meth}= #{meth}=
+          # create new writer
           def #{meth}=(val)
-            pack(_#{meth}, #{pack_type})
+            self[:#{meth}] = pack(val, '#{pack_type}')
           end  
         }
       end
       
       private
         def pack_formats
-          [:marshal, :json, :yaml, :marshal_64]
+          formats = [:marshal, :json, :yaml, :marshal_64]
+          formats | formats.collect(&:to_s)
         end
     end
     
     module InstanceMethods
-      def unpack(meth, pack_type)
-        do_pack do |klass, pack_encode|
-          # decode if required
-          loaded = Base64.decode64( meth ) if pack_encode 
-          # use the class to load the data
-          loaded = defined?(loaded) ? klass.load( loaded ) : klass( meth )
-        end  
-        loaded
-      end
-      
-      def pack(meth, pack_type)
-        do_pack do |klass, pack_encode|
-          # pack using class
-          dumped = klass.dump( meth )
-          # encode if necessary
-          dumped = Base64.encode64( dumped ) if pack_encode
-        end  
-        dumped
-      end  
-      
       private
-        def do_pack( pack_type )
+        def unpack(p_object, pack_type)
+          if p_object.class == String
+            loaded = do_pack do |klass, pack_encode|
+              # decode if required
+              decoded = Base64.decode64( p_object ) if pack_encode 
+              # use the class to load the data
+              return( (defined?(decoded) && decoded ) ? klass.load( decoded ) : klass.load( p_object ) )
+            end  
+          else
+            loaded = p_object
+          end    
+          loaded
+        end
+      
+        def pack(p_object, pack_type)
+          do_pack do |klass, pack_encode|
+            # pack using class
+            dumped = klass.dump( p_object )
+            # encode if necessary
+            dumped = Base64.encode64( dumped ) if pack_encode
+            return dumped
+          end  
+        end  
+      
+        def do_pack
           # determine base pack type and encoding
           pack_type = pack_type.to_s
           pack_encode = false
@@ -79,6 +81,7 @@ module ArObjectPack
 
           yield( klass, pack_encode )
         end  
+      public  
     end      
   end  
 end

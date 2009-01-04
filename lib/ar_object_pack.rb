@@ -5,7 +5,9 @@ if defined?(Merb::Plugins)
   Merb::Plugins.config[:ar_object_pack] = {}
   
   Merb::BootLoader.before_app_loads do
-    # require code that must be loaded before the application
+    # load ObjectPacker into AR Base
+    require File.dirname(__FILE__) + '/ar_object_pack/object_packer'
+    ActiveRecord::Base.send(:extend, ArObjectPack::ObjectPackager::ActiveRecordMethods)
   end
   
   Merb::BootLoader.after_app_loads do
