@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ["README", "LICENSE", "TODO"]
   s.files = ["LICENSE", "README", "Rakefile", "TODO", "lib/ar_object_pack", "lib/ar_object_pack/object_packer.rb", "lib/ar_object_pack.rb", "spec/ar_object_pack_spec.rb", "spec/database_spec_setup.rb", "spec/dbs", "spec/irb_tester.rb", "spec/spec.opts", "spec/spec_helper.rb"]
   s.has_rdoc = true
-  s.homepage = %q{http://github.com/ru_ghetto/ar_object_pack}
+  s.homepage = %q{http://github.com/rughetto/ar_object_pack}
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{merb}
   s.rubygems_version = %q{1.3.1}

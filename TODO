@@ -1,4 +1,5 @@
 TODO:
 
-Add Rails plugin initialization file(s).
+Create instructions for installation with Rails
+
 Think about validations, etc for packaging enumerable values and other useful objects from Datamapper
