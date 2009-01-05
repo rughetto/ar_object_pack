@@ -20,8 +20,10 @@ If using Merb, adding the gem as a dependency will also load the required method
   require File.dirname(__FILE__) + PATH_TO_GEM_LIB_DIR +'/ar_object_pack/object_packer'
   ActiveRecord::Base.send(:extend, ArObjectPack::ObjectPackager::ActiveRecordMethods)
 
-PATH_TO_GEM_LIB_DIR above should be replaced by the relative path from the initialization file to the gem library. Hopefully soon a init.rb file will allow easy Rails plugin ability too.
+PATH_TO_GEM_LIB_DIR above should be replaced by the relative path from the initialization file to the gem library. 
 
+ar_object_pack can also be installed as a Rails Plugin using:
+  ruby script/plugin install git://github.com/rughetto/ar_object_pack.git
 
 USAGE
 ===== 

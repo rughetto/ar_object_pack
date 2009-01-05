@@ -9,7 +9,7 @@ GEM_NAME =    "ar_object_pack"
 GEM_VERSION = "0.0.1"
 AUTHOR =      "Rue The Ghetto"
 EMAIL =       "ru_ghetto@rubyghetto.com"
-HOMEPAGE =    "http://github.com/ru_ghetto/ar_object_pack"
+HOMEPAGE =    "http://github.com/rughetto/ar_object_pack"
 SUMMARY =     "ActiveRecord plugin originally designed for Merb use that allows the packaging of objects into formats: marshal, json and yaml."
 
 spec = Gem::Specification.new do |s|
@@ -34,16 +34,6 @@ end
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
-end
-
-desc "install the plugin as a gem"
-task :install do
-  Merb::RakeHelper.install(GEM_NAME, :version => GEM_VERSION)
-end
-
-desc "Uninstall the gem"
-task :uninstall do
-  Merb::RakeHelper.uninstall(GEM_NAME, :version => GEM_VERSION)
 end
 
 desc "Create a gemspec file"
