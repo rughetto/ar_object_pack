@@ -145,7 +145,11 @@ describe "ar_object_pack" do
       end  
       
       it "should decode a field attribute when that option is specified in the pack_type" do
-        Base64.should_receive(:decode64).at_least(:once)
+        # This seems to be failing even though it is actually working. 
+        # The error is bubbling up from the C code. If the should_receive directive is taken out 
+        # of the mix no error is raised. So it may be some weirdness with the interaction between
+        # Marshal and rpsec ??
+        Base64.should_receive("decode64").at_least(:once)
         @instance.obj_marshal_64 = @object
         @instance.obj_marshal_64
       end
