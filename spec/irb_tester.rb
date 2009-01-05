@@ -15,6 +15,7 @@ require 'rubygems'
 require 'active_record'
 require 'sqlite3'
 require 'irb'
+require 'ruby-debug'
 
 File.delete("irb_test.db")  if File.file?("irb_test.db")
 
@@ -29,9 +30,11 @@ ActiveRecord::Base.establish_connection(
 ActiveRecord::Schema.define do
   ActiveRecord::Schema.define do
     create_table :packages, :force => true do |t|
-      t.column :title,  :string
-      t.column :obj,    :text
-      t.column :arr,    :text
+      t.column :obj,            :text
+      t.column :obj_marshal,    :text
+      t.column :obj_yaml,       :text
+      t.column :obj_json,       :text
+      t.column :obj_marshal_64, :text
     end
     
     create_table :testings, :force => true do |t|
@@ -42,6 +45,10 @@ end
 
 class Package < ActiveRecord::Base
   package :obj
+  package :obj_marshal,     :marshal
+  package :obj_yaml,        :yaml
+  package :obj_json,        :json
+  package :obj_marshall_64, :marshal_64
 end
 
 IRB.start if __FILE__ == $0

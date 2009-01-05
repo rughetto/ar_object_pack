@@ -1,4 +1,3 @@
 TODO:
-Add your code to lib/ar_object_pack.rb
-Add your Merb rake tasks to lib/ar_object_pack/merbtasks.rb
+Add/remove your Merb rake tasks to lib/ar_object_pack/merbtasks.rb
 Fix README to say something meaningful

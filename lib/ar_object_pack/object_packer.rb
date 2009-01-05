@@ -14,7 +14,6 @@ module ArObjectPack
         include ArObjectPack::ObjectPackager::InstanceMethods
         
         pack_type = :marshal unless pack_formats.include?( pack_type )
-        
         self.class_eval %{
           # create new reader 
           def #{meth}
@@ -39,7 +38,7 @@ module ArObjectPack
       private
         def unpack(p_object, pack_type)
           if p_object.class == String
-            loaded = do_pack do |klass, pack_encode|
+            loaded = do_pack( pack_type ) do |klass, pack_encode|
               # decode if required
               decoded = Base64.decode64( p_object ) if pack_encode 
               # use the class to load the data
@@ -52,8 +51,11 @@ module ArObjectPack
         end
       
         def pack(p_object, pack_type)
-          do_pack do |klass, pack_encode|
+          do_pack( pack_type ) do |klass, pack_encode|
             # pack using class
+            if klass == JSON
+              JSON.dump( p_object)
+            end  
             dumped = klass.dump( p_object )
             # encode if necessary
             dumped = Base64.encode64( dumped ) if pack_encode
@@ -61,7 +63,7 @@ module ArObjectPack
           end  
         end  
       
-        def do_pack
+        def do_pack( pack_type )
           # determine base pack type and encoding
           pack_type = pack_type.to_s
           pack_encode = false
@@ -74,11 +76,11 @@ module ArObjectPack
           when "json"
             klass = JSON
           when "yaml"
-            klass = YAMl
+            klass = YAML
           else
             klass = Marshal
           end  
-
+          
           yield( klass, pack_encode )
         end  
       public  
