@@ -1,4 +1,40 @@
 ar_object_pack
 ==============
 
-A plugin for the Merb framework that provides ...
+A Merb/Rails plugin for ActiveRecord that pack objects into text strings easy storage in the database. 
+
+Advances in ORMs like DataMapper have introduced data types that allow rich data objects to be packed into the database. From early on ActiveRecord came with the #serialize method, that adds this functionality via YAML. The implementation of YAML in Ruby is very slow, making serialization this way approximately 30 to 100 times slower that serializing via data marshaling, depending on the complexity of the object. 
+
+This plugin allows objects to be packaged into the database using Marshal, JSON, or YAML. In addition, marshaled objects can be encoded using base 64 to prevent problems with character sets in the query string.
+
+
+INSTALLATION
+============
+ar_object_pack is a gem hosted at github. To add github as a source for gems, run this on command:
+  gem sources -a http://gems.github.com
+The gem can then be installed on the command line via
+  sudo gem install ar_object_pack
+
+If using Merb, adding the gem as a dependency will also load the required methods into ActiveRecord Base. For other frameworks, add to the application initialization the following lines of code:
+
+  require File.dirname(__FILE__) + PATH_TO_GEM_LIB_DIR +'/ar_object_pack/object_packer'
+  ActiveRecord::Base.send(:extend, ArObjectPack::ObjectPackager::ActiveRecordMethods)
+
+PATH_TO_GEM_LIB_DIR above should be replaced by the relative path from the initialization file to the gem library. Hopefully soon a init.rb file will allow easy Rails plugin ability too.
+
+
+USAGE
+===== 
+ar_object_pack adds the #package method to ActiveRecord base. That means that in the model class definition, any text holding field can be specified as a packaged object. 
+
+  class PackagedThing < ActiveRecord::Base
+    package :obj              # defaults to :marshal
+    package :obj_marshal,     :marshal
+    package :obj_yaml,        :yaml
+    package :obj_json,        :json
+    package :obj_marshal_64,  :marshal_64
+  end
+
+#package takes two arguments
+  1) database_attribute: This can be of type either string or a symbol. If the text does not correspond to a model database attribute, an argument exception will be raised.
+  2) package_method: This is an optional argument with the default value being :marshal. The value can also be passed as either a string or a symbol. Currently there are the values as seen in above example.  

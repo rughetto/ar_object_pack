@@ -1,3 +1,4 @@
 TODO:
-Add/remove your Merb rake tasks to lib/ar_object_pack/merbtasks.rb
-Fix README to say something meaningful
+
+Add Rails plugin initialization file(s).
+Think about validations, etc for packaging enumerable values and other useful objects from Datamapper
