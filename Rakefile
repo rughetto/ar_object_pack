@@ -1,3 +1,6 @@
+WIN32 = (RUBY_PLATFORM =~ /win32|mingw|bccwin|cygwin/) rescue nil
+SUDO = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
+
 require 'rubygems'
 require 'rake/gempackagetask'
 require 'spec/rake/spectask'
@@ -25,7 +28,7 @@ spec = Gem::Specification.new do |s|
   s.email = EMAIL
   s.homepage = HOMEPAGE
   
-  s.add_dependency('active_record')
+  s.add_dependency('activerecord')
   s.add_dependency('json')
   
   s.require_path = 'lib'
@@ -42,6 +45,25 @@ task :gemspec do
     file.puts spec.to_ruby
   end
 end
+
+desc "Install #{GEM_NAME}"
+if WIN32
+  task :install => :gem do
+    system %{gem install --no-rdoc --no-ri -l pkg/#{GEM_NAME}-#{GEM_VERSION}.gem}
+  end
+  namespace :dev do
+    desc 'Install for development (for windows)'
+    task :winstall => :gem do
+      warn "You can now call 'rake install' instead of 'rake dev:winstall'."
+      system %{gem install --no-rdoc --no-ri -l pkg/#{GEM_NAME}-#{GEM_VERSION}.gem}
+    end
+  end
+else
+  task :install => :package do
+    sh %{#{SUDO} gem install --local pkg/#{GEM_NAME}-#{GEM_VERSION}.gem}
+  end
+end
+
 
 Spec::Rake::SpecTask.new do |t|
    t.warning = true
