@@ -13,7 +13,7 @@ INSTALLATION
 ar_object_pack is a gem hosted at github. To add github as a source for gems, run this on command:
   gem sources -a http://gems.github.com
 The gem can then be installed on the command line via
-  sudo gem install ar_object_pack
+  sudo gem install rughetto-ar_object_pack
 
 If using Merb, adding the gem as a dependency will also load the required methods into ActiveRecord Base. For other frameworks, add to the application initialization the following lines of code:
 
