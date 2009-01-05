@@ -11,7 +11,8 @@ module ArObjectPack
     # arguments: meth 
     module ActiveRecordMethods
       def package( meth, pack_type=:marshal )
-        include ArObjectPack::ObjectPackager::InstanceMethods
+        raise ArgumentError, "#{meth} is not a database attribute " unless self.new.attributes.keys.include?( meth.to_s )
+        include ArObjectPack::ObjectPackager::InstanceMethods unless self.respond_to?(:do_pack)
         
         pack_type = :marshal unless pack_formats.include?( pack_type )
         self.class_eval %{
@@ -22,7 +23,11 @@ module ArObjectPack
           
           # create new writer
           def #{meth}=(val)
-            self[:#{meth}] = pack(val, '#{pack_type}')
+            begin
+              self[:#{meth}] = pack(val, '#{pack_type}')
+            rescue => e
+              raise ArgumentError, "Unable to package this object using #{pack_type}: message - " + e.message
+            end    
           end  
         }
       end
@@ -40,9 +45,10 @@ module ArObjectPack
           if p_object.class == String
             loaded = do_pack( pack_type ) do |klass, pack_encode|
               # decode if required
-              decoded = Base64.decode64( p_object ) if pack_encode 
+              decoded = pack_encode ? Base64.decode64( p_object ) : p_object 
               # use the class to load the data
-              return( (defined?(decoded) && decoded ) ? klass.load( decoded ) : klass.load( p_object ) )
+              decoded = klass.load( decoded )
+              return decoded 
             end  
           else
             loaded = p_object
@@ -71,7 +77,7 @@ module ArObjectPack
             pack_encode = true
             pack_type = pack_type[0 .. pack_type.length-4]
           end  
-
+          
           case pack_type
           when "json"
             klass = JSON

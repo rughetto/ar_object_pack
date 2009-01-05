@@ -9,51 +9,18 @@ require 'sqlite3'
 # files for testing
 require File.dirname(__FILE__) + '/../lib/ar_object_pack/object_packer'
 
+# establish database and test classes
+require File.dirname(__FILE__) + "/database_spec_setup"
+include DatabaseSpecSetup
+
 describe "ar_object_pack" do
-  # build the database and send library to AR base
-  before(:all) do
-    # remove the old database 
-    File.delete("object_pack_tester.db")  if File.file?("object_pack_tester.db")
-    
-    # send methods to base
-    ActiveRecord::Base.send(:extend, ArObjectPack::ObjectPackager::ActiveRecordMethods)
-    
-    # establish a connection to the sqlite database
-    ActiveRecord::Base.establish_connection(
-      :adapter =>   'sqlite3',
-      :database =>  'object_pack_tester.db'
-    )
-    
-    # define a schema
-    ActiveRecord::Schema.define do
-      create_table :packages, :force => true do |t|
-        t.column :obj,            :text
-        t.column :obj_marshal,    :text
-        t.column :obj_yaml,       :text
-        t.column :obj_json,       :text
-        t.column :obj_marshal_64, :text
-      end
-      
-      create_table :testings, :force => true do |t|
-        t.column :str, :string
-      end  
-    end
-  end  
-  
-  after(:all) do
-    # cleanup!
-    File.delete("object_pack_tester.db")  if File.file?("object_pack_tester.db")
-    File.delete("irb_test.db") if File.file?("irb_test.db")
-  end  
-  
   describe "testing setup: " do
     it "have all the needed gems and files to run" do
       # before block should not throw error and the following should pass!
       true.should == true
     end  
     
-    it "should save and retrieve test records" do
-      class Testing < ActiveRecord::Base; end
+    it "should save and retrieve test records normally" do
       testing = Testing.new(:str => "my new string")
       testing.should be_new_record
       testing.save
@@ -68,26 +35,15 @@ describe "ar_object_pack" do
     end  
   end  
   
-  describe 'packaging objects' do
-    before(:all) do
-      class Package < ActiveRecord::Base
-        package :obj
-        package :obj_marshal,     :marshal
-        package :obj_yaml,        :yaml
-        package :obj_json,        :json
-        package :obj_marshall_64, :marshal_64
-      end  
-      @class = Package
-    end
-    
+  describe 'packaging objects, ' do
     before(:each) do  
       @object = ['1','2','3']
-      @instance = @class.new
+      @instance = Package.new
     end  
     
     it "using the AR package call should not raise errors" do
       lambda {
-        instance = @class.new
+        instance = Package.new
       }.should_not raise_error
     end  
     
@@ -99,12 +55,12 @@ describe "ar_object_pack" do
       end 
     
       it "should pack a field attribute using Marshal if no pack method is defined" do
-        Marshal.should_receive(:dump)
+        Marshal.should_receive(:dump).at_least(:once)
         @instance.obj = @object
       end  
       
       it "should unpack a field attribute using Marshal if no pack method is defined" do
-        Marshal.should_receive(:load)
+        Marshal.should_receive(:load).at_least(:once)
         @instance.obj = @object
         @instance.obj
       end 
@@ -112,12 +68,12 @@ describe "ar_object_pack" do
 
     describe "explicit Marshal packing" do
       it "should pack a field attribute using Marshal when that option is specified" do
-        Marshal.should_receive(:dump)
+        Marshal.should_receive(:dump).at_least(:once)
         @instance.obj_marshal = @object
       end  
       
       it "should unpack a field attribute using Marshal when that option is specified" do
-        Marshal.should_receive(:load)
+        Marshal.should_receive(:load).at_least(:once)
         @instance.obj_marshal = @object
         @instance.obj_marshal
       end
@@ -132,12 +88,12 @@ describe "ar_object_pack" do
         
     describe "YAML packing" do
       it "should pack a field attribute using YAML when that option is specified" do
-        YAML.should_receive(:dump)
+        YAML.should_receive(:dump).at_least(:once)
         @instance.obj_yaml = @object
       end  
 
       it "should unpack a field attribute using YAML when that option is specified" do
-        YAML.should_receive(:load)
+        YAML.should_receive(:load).at_least(:once)
         @instance.obj_yaml = @object
         @instance.obj_yaml
       end
@@ -163,7 +119,7 @@ describe "ar_object_pack" do
       end  
 
       it "should unpack a field attribute using JSON when that option is specified" do
-        JSON.should_receive(:load)
+        JSON.should_receive(:load).at_least(:once)
         @instance.obj_json = @object
         @instance.obj_json
       end
@@ -182,7 +138,47 @@ describe "ar_object_pack" do
       end  
     end
     
-  end  
+    describe "Encoding with packing" do
+      it "should encode a field attribute when that option is specified in the pack_type" do
+        Base64.should_receive(:encode64).at_least(:once)
+        @instance.obj_marshal_64 = @object
+      end  
+      
+      it "should decode a field attribute when that option is specified in the pack_type" do
+        Base64.should_receive(:decode64).at_least(:once)
+        @instance.obj_marshal_64 = @object
+        @instance.obj_marshal_64
+      end
   
-
+      it "an object should be the same after packing, saving and unpacking when using encoded data" do
+        @instance.obj_marshal_64 = @object
+        @instance.save
+        @instance.reload
+        @instance.obj_marshal_64.should == @object
+      end
+      
+      it "object should not be packed in the same way as unencoded marshal" do
+        @instance.obj_marshal_64 = @object
+        @instance.obj = @object
+        @instance[:obj_marshal_64].should_not == @instance[:obj]
+        @instance[:obj_marshal_64].should_not == @object
+      end
+    end  
+    
+    describe "an exception should be thrown if" do
+      it "packaging method is unable to pack the object" do
+        lambda{
+          @instance.obj_json = {:something => :else}
+        }.should raise_error
+      end  
+      
+      it "package is called on the class for a method name that does not belong to a field attribute" do
+        lambda {
+          class Package
+            package :not_a_field
+          end
+        }.should raise_error
+      end  
+    end  
+  end  
 end

@@ -22,33 +22,7 @@ File.delete("irb_test.db")  if File.file?("irb_test.db")
 require File.dirname(__FILE__) + '/../lib/ar_object_pack/object_packer'
 ActiveRecord::Base.send(:extend, ArObjectPack::ObjectPackager::ActiveRecordMethods)
 
-ActiveRecord::Base.establish_connection(
-  :adapter =>   'sqlite3',
-  :database =>  'irb_test.db'
-)
-
-ActiveRecord::Schema.define do
-  ActiveRecord::Schema.define do
-    create_table :packages, :force => true do |t|
-      t.column :obj,            :text
-      t.column :obj_marshal,    :text
-      t.column :obj_yaml,       :text
-      t.column :obj_json,       :text
-      t.column :obj_marshal_64, :text
-    end
-    
-    create_table :testings, :force => true do |t|
-      t.column :str, :string
-    end  
-  end
-end
-
-class Package < ActiveRecord::Base
-  package :obj
-  package :obj_marshal,     :marshal
-  package :obj_yaml,        :yaml
-  package :obj_json,        :json
-  package :obj_marshall_64, :marshal_64
-end
+require File.dirname(__FILE__) + "/database_spec_setup"
+include DatabaseSpecSetup
 
 IRB.start if __FILE__ == $0
