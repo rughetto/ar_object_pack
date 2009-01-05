@@ -9,7 +9,7 @@ require 'merb-core'
 require 'merb-core/tasks/merb'
 
 GEM_NAME =    "ar_object_pack"
-GEM_VERSION = "0.0.1"
+GEM_VERSION = "0.0.2"
 AUTHOR =      "Rue The Ghetto"
 EMAIL =       "ru_ghetto@rubyghetto.com"
 HOMEPAGE =    "http://github.com/rughetto/ar_object_pack"
