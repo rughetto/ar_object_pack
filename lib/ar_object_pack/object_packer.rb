@@ -11,7 +11,7 @@ module ArObjectPack
     # arguments: meth 
     module ActiveRecordMethods
       def package( meth, pack_type=:marshal )
-        raise ArgumentError, "#{meth} is not a database attribute " unless self.new.attributes.keys.include?( meth.to_s )
+        raise ArgumentError, "#{meth} is not a database attribute. Perhaps you need to migrate." unless self.columns.collect(&:name).include?( meth.to_s )
         include ArObjectPack::ObjectPackager::InstanceMethods unless self.respond_to?(:do_pack)
         
         pack_type = :marshal unless pack_formats.include?( pack_type )

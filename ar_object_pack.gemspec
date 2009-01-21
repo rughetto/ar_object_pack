@@ -2,15 +2,15 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ar_object_pack}
-  s.version = "0.0.2"
+  s.version = "0.0.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rue The Ghetto"]
-  s.date = %q{2009-01-05}
+  s.date = %q{2009-01-21}
   s.description = %q{ActiveRecord plugin originally designed for Merb use that allows the packaging of objects into formats: marshal, json and yaml.}
   s.email = %q{ru_ghetto@rubyghetto.com}
   s.extra_rdoc_files = ["README", "LICENSE", "TODO"]
-  s.files = ["LICENSE", "README", "Rakefile", "TODO", "lib/ar_object_pack", "lib/ar_object_pack/object_packer.rb", "lib/ar_object_pack.rb", "spec/ar_object_pack_spec.rb", "spec/database_spec_setup.rb", "spec/irb_tester.rb", "spec/spec.opts", "spec/spec_helper.rb"]
+  s.files = ["LICENSE", "README", "Rakefile", "TODO", "lib/ar_object_pack", "lib/ar_object_pack/object_packer.rb", "lib/ar_object_pack/set_typing.rb", "lib/ar_object_pack.rb", "spec/ar_object_pack_spec.rb", "spec/database_spec_setup.rb", "spec/irb_tester.rb", "spec/spec.opts", "spec/spec_helper.rb"]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/rughetto/ar_object_pack}
   s.require_paths = ["lib"]

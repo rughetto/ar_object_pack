@@ -1,5 +1,5 @@
 TODO:
 
-Create instructions for installation with Rails
-
-Think about validations, etc for packaging enumerable values and other useful objects from Datamapper
+* Get SetTyping related stuff working - 
+  * is_in_set class method will validate that the string is in an allowable set of values
+  * is_a_subset packages an array into the database, and validates that the values are acceptable

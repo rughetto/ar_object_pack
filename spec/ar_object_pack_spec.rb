@@ -6,14 +6,15 @@ require 'rubygems'
 require 'active_record'
 require 'sqlite3'
 
-# files for testing
-require File.dirname(__FILE__) + '/../lib/ar_object_pack/object_packer'
-
 # establish database and test classes
 require File.dirname(__FILE__) + "/database_spec_setup"
 include DatabaseSpecSetup
 
 describe "ar_object_pack" do
+  after(:all) do
+    File.delete("object_pack_tester.db")  if File.file?("object_pack_tester.db")
+  end
+  
   describe "testing setup: " do
     it "have all the needed gems and files to run" do
       # before block should not throw error and the following should pass!
@@ -184,5 +185,28 @@ describe "ar_object_pack" do
         }.should raise_error
       end  
     end  
-  end  
+  end 
+  
+  describe 'set typing' do
+    describe 'is_in_set' do
+      before(:each) do
+        @roles_array = [1,2,3,4]
+      end  
+      
+      it "should create a class inheritable array to hold the set value" do
+        Setter.respond_to?(:role_set)
+      end 
+       
+      it "should set the class inheritable array to the set" do
+        pending
+        Setter.role_set.should == @roles_array
+      end 
+      
+      it "should throw an argument error if the set is not an array"
+      it "should throw an argument error if the set array is empty"
+      it "record should be valid if the is_in_set attribute is blank"
+      it "record should be valid if the attribute is a member of the set"
+      it "record should not be valid the value is not in the set"
+    end  
+  end
 end
